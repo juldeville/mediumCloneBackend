@@ -1,9 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+//Get articles
+
+router.get('/articles', (req, res) => {
+  fetch('https://api.realworld.io/api/articles')
+  .then(response => response.json())
+  .then(apiData => {
+    if(JSON.stringify(apiData.articles) !== '{}') {
+      res.json({articles: apiData.articles})
+    } else {
+      res.json({error: 'no data found'})
+    }
+  })
+})
 
 module.exports = router;
