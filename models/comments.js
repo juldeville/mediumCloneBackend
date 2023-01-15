@@ -5,10 +5,7 @@ const commentSchema = new mongoose.Schema({
     text: {type: String, required: true}
 });
 
-const commentsSchema = new mongoose.Schema({
-    comments: [commentSchema]
-});
 
-const Comment = mongoose.model('comments', commentsSchema);
+const Comment = mongoose.model('comments', commentSchema);
 
 module.exports = Comment;

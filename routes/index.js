@@ -1,19 +1,21 @@
 var express = require('express');
 var router = express.Router();
-
+const Article = require('../models/articles')
+const User = require('../models/users')
 //Get articles
 
+
 router.get('/articles', (req, res) => {
-  fetch('https://api.realworld.io/api/articles?limit=197&offset=0')
-  .then(response => response.json())
-  .then(apiData => {
-    if(JSON.stringify(apiData.articles) !== '{}') {
-      res.json({articles: apiData.articles})
+  Article.find({}).populate('author', 'bio image username').then(data => {
+    console.log(JSON.stringify(data))
+    if(JSON.stringify(data) !== '{}') {
+      res.json({articles: data})
     } else {
       res.json({error: 'no data found'})
     }
   })
 })
+
 
 //Get tags
 

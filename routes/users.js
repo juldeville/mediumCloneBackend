@@ -25,7 +25,10 @@ User.findOne({email: req.body.email}).then(data => {
       email: req.body.email,
       password: hash,
       canBookmark: true,
-      token: uid2(32)
+      token: uid2(32),
+      bio: req.body.bio,
+      image: req.body.image,
+      
     });
 
     newUser.save().then(newDoc => {
