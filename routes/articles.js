@@ -5,6 +5,18 @@ const User = require('../models/users')
 const Comment = require('../models/comments')
 
 
+
+//Get Article
+
+router.get('/article/:id', (req, res) => {
+    Article.findById(req.params.id).populate('author', 'bio image username').then(data => {
+        if (data) {
+            res.json({result: true, article: data})
+        } else {
+            res.json({ result: false, error: 'article not found'})
+        }
+    })
+})
 //Update Articles ID
 
 router.put('/updateArticles', (req, res) => {
