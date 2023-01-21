@@ -44,12 +44,12 @@ User.findOne({email: req.body.email}).then(data => {
 //Sign in new user
 
 router.post('/signin', (req, res) => {
-  if (!checkBody(req.body, ['email', 'password',])) {
+  if (!checkBody(req.body, ['username', 'password',])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
 
-  User.findOne({ email: req.body.email }).then(data => {
+  User.findOne({ username: req.body.username }).then(data => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       res.json({result: true, token: data.token})
     } else {
