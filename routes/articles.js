@@ -2,9 +2,23 @@ var express = require('express');
 var router = express.Router();
 const Article = require('../models/articles')
 const User = require('../models/users')
-const Comment = require('../models/comments')
+const Comment = require('../models/comments');
+const { application } = require('express');
+
+//Get articles
 
 
+router.get('/articles', (req, res) => {
+    Article.find({}).populate('author', 'bio image username').then(data => {
+      console.log(JSON.stringify(data))
+      if(JSON.stringify(data) !== '{}') {
+        res.json({articles: data})
+      } else {
+        res.json({error: 'no data found'})
+      }
+    })
+  })
+  
 
 //Get Article
 
@@ -47,6 +61,37 @@ router.post('/comments/:article', (req, res) => {
     });
 });
 
+
+//get top 10 popular tags
+
+router.get('/toptags', (req, res) => {
+    Article.aggregate([
+        {$unwind: '$tags'},
+        {$group: {_id: '$tags', count: {$sum: 1}}},
+        {$sort: {count: -1}},
+        {$limit: 10}
+    ])
+    .then(result => {
+        res.json(result)
+    })
+    .catch(error => {
+        res.status(500).json({error})
+    })
+})
+
+//get articles by tag
+
+router.get('/getArticlesByTag/:tag', (req, res) => {
+    const tag = req.params.tag
+    Article.find({tags: tag})
+    .then(data => {
+        if (data.length>0){ 
+        res.json({result: true, articles: data})
+    } else {
+        res.json({result: false})
+    }
+    })
+})
   
 
 
