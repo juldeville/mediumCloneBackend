@@ -5,7 +5,7 @@ const User = require('../models/users')
 const Comment = require('../models/comments');
 const { application } = require('express');
 
-//Get articles
+//Get articles 
 
 
 router.get('/articles', (req, res) => {
