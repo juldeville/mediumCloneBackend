@@ -4,6 +4,7 @@ const Article = require('../models/articles')
 const User = require('../models/users')
 const Comment = require('../models/comments');
 const { application } = require('express');
+const { checkBody } = require('../modules/checkBody')
 
 //Get articles 
 
@@ -31,6 +32,18 @@ router.get('/article/:id', (req, res) => {
         }
     })
 })
+
+//get Top Articles
+
+router.get('/topArticles', (req, res) => {
+    Article.find().sort({likes: -1}).limit(6).populate('author', 'bio image username').then(data => {
+        if(JSON.stringify(data) !== '{}') {
+            res.json({articles: data})
+        } else {
+            res.json({error: 'no data found'})
+        }
+    })
+})
 //Update Articles ID
 
 router.put('/updateArticles', (req, res) => {
@@ -42,6 +55,38 @@ router.put('/updateArticles', (req, res) => {
         }
     });
 });
+
+//Add Articles
+
+router.post('/addArticle', (req, res) => {
+    if (!checkBody(req.body, ['title', 'author', 'date_published', 'description', 'content', 'image', 'likes', 'tags'])) {
+      res.json({result: false, error: 'Missing or empty fields'})
+      return
+    }
+
+    Article.findOne({title: req.body.title}).then(data => {
+        if (data === null) {
+            const {title, author, date_published, description, content, image, likes, tags, slug} = req.body
+            const newArticle = new Article({
+                title,
+                author,
+                date_published,
+                description,
+                content,
+                image,
+                likes,
+                tags: tags.split(',').map(tag => tag.trim()),
+                slug
+            })
+
+            newArticle.save().then(newDoc => {
+                res.json({result: true})
+            })
+        } else {
+            res.json({result: false, error: 'invalid article'})
+        }
+    })
+  })
 
 // add Comment
 
@@ -83,7 +128,7 @@ router.get('/toptags', (req, res) => {
 
 router.get('/getArticlesByTag/:tag', (req, res) => {
     const tag = req.params.tag
-    Article.find({tags: tag})
+    Article.find({tags: tag}).populate('author', 'bio image username')
     .then(data => {
         if (data.length>0){ 
         res.json({result: true, articles: data})

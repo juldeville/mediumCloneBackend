@@ -10,6 +10,13 @@ const articleSchema = mongoose.Schema({
     likes: Number,
     tags: [String],
     comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'comments'}],
+    slug: {
+        type: String,
+        unique: true,
+        set: function(value) {
+            return value.toLowerCase().replace(/\s+/g, '-');
+        }
+    } 
 })
 
 const Article = mongoose.model('articles', articleSchema)
